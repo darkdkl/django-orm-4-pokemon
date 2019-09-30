@@ -29,6 +29,7 @@ class PokemonEntity(models.Model):
         blank=True,
         on_delete=models.SET_NULL,
         verbose_name='Эволюционирует из',
+        related_name='evolution_from'
     )
     lat = models.FloatField(verbose_name='Широта')
     lon = models.FloatField(verbose_name='Долгота')
