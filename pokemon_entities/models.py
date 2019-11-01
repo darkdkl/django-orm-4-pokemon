@@ -22,7 +22,7 @@ class Pokemon(models.Model):
 class PokemonEntity(models.Model):
     pokemon = models.ForeignKey(Pokemon,
                                 on_delete=models.CASCADE,
-                                related_name='entities')
+                                related_name='entity')
     evolution = models.ForeignKey(
         "self",
         null=True,
