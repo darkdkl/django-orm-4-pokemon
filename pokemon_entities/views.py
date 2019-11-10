@@ -54,8 +54,8 @@ def show_all_pokemons(request):
 def show_pokemon(request, pokemon_id):
 
     try:
-        pokemon = PokemonEntity.objects.select_related().get(
-            pokemon__id=int(pokemon_id))
+        pokemon = Pokemon.objects.select_related().get(id=int(pokemon_id))
+        entity = pokemon.entity.get()
 
     except Pokemon.DoesNotExist:
         return HttpResponseNotFound('<h1>Такой покемон не найден</h1>')
@@ -64,48 +64,45 @@ def show_pokemon(request, pokemon_id):
 
     pokemon_info = {}
     try:
-        next_evolution = pokemon.evolution_from.select_related('pokemon').get()
+        
+        next_evolution = pokemon.evolution_from.get()
 
-    except PokemonEntity.DoesNotExist:
+    except Pokemon.DoesNotExist:
         next_evolution = None
-    except PokemonEntity.MultipleObjectsReturned:
+    except Pokemon.MultipleObjectsReturned:
         next_evolution = None
 
     pokemon_info.update({
         'pokemon_id':
-        pokemon.pokemon.id,
+        pokemon.id,
         'img_url':
-        request.build_absolute_uri(pokemon.pokemon.image.url),
+        request.build_absolute_uri(pokemon.image.url),
         'title_ru':
-        pokemon.pokemon.title,
+        pokemon.title,
         'title_en':
-        pokemon.pokemon.title_en,
+        pokemon.title_en,
         'title_jp':
-        pokemon.pokemon.title_jp,
+        pokemon.title_jp,
         'description':
-        pokemon.pokemon.description,
+        pokemon.description,
     })
 
     if pokemon.evolution:
         pokemon_info['previous_evolution'] = {
-            'pokemon_id':
-            pokemon.evolution.pokemon.id,
-            'title_ru':
-            pokemon.evolution.pokemon.title,
-            'img_url':
-            request.build_absolute_uri(pokemon.evolution.pokemon.image.url)
+            'pokemon_id': pokemon.evolution.id,
+            'title_ru': pokemon.evolution.title,
+            'img_url': request.build_absolute_uri(pokemon.evolution.image.url)
         }
 
     if next_evolution:
         pokemon_info['next_evolution'] = {
-            'pokemon_id': next_evolution.pokemon.id,
-            'title_ru': next_evolution.pokemon.title,
-            'img_url':
-            request.build_absolute_uri(next_evolution.pokemon.image.url)
+            'pokemon_id': next_evolution.id,
+            'title_ru': next_evolution.title,
+            'img_url': request.build_absolute_uri(next_evolution.image.url)
         }
 
-    add_pokemon(folium_map, pokemon.lat, pokemon.lon, pokemon.pokemon.title,
-                request.build_absolute_uri(pokemon.pokemon.image.url))
+    add_pokemon(folium_map, entity.lat, entity.lon,
+                pokemon.title, request.build_absolute_uri(pokemon.image.url))
 
     return render(request,
                   "pokemon.html",

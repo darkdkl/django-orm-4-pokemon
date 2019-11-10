@@ -14,6 +14,14 @@ class Pokemon(models.Model):
     title_jp = models.CharField(verbose_name='Название на японском',
                                 max_length=20,
                                 blank=True)
+    evolution = models.ForeignKey(
+        "self",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        verbose_name='Эволюционирует из',
+        related_name='evolution_from'
+    )
 
     def __str__(self):
         return self.title
@@ -23,14 +31,7 @@ class PokemonEntity(models.Model):
     pokemon = models.ForeignKey(Pokemon,
                                 on_delete=models.CASCADE,
                                 related_name='entity')
-    evolution = models.ForeignKey(
-        "self",
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        verbose_name='Эволюционирует из',
-        related_name='evolution_from'
-    )
+    
     lat = models.FloatField(verbose_name='Широта')
     lon = models.FloatField(verbose_name='Долгота')
     appeared_at = models.DateTimeField(verbose_name='Появится на карте',db_index=True)
