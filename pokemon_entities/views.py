@@ -54,7 +54,7 @@ def show_all_pokemons(request):
 def show_pokemon(request, pokemon_id):
 
     try:
-        pokemon = Pokemon.objects.select_related().get(id=int(pokemon_id))
+        pokemon = Pokemon.objects.select_related('evolution').get(id=int(pokemon_id))
         entity = pokemon.entity.get()
 
     except Pokemon.DoesNotExist:
